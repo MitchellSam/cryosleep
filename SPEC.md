@@ -87,8 +87,9 @@ game (it is itself an Alien homage):
 - Rooms: Cockpit, Engine Room, Laboratory, Generator, Airlock, Bridge, Surgery, Storage, Armory,
   Control Room, Escape Pods, Nest.
 - Creature life stages and tokens: Larva, Adult, Queen, Egg, Creeper, Breeder — biological nouns.
-- Character roles: scout, mechanic, captain, pilot, scientist, soldier, doctor — occupational nouns,
-  already our seven classes.
+- Character roles: captain, pilot, scientist, scout, soldier, mechanic — occupational nouns, and the
+  published game's six classes exactly. (An earlier draft of this spec listed seven, inventing a
+  doctor; fidelity wins — there are six.)
 - Common item and system words: flamethrower, medkit, grenade, coordinates, hull breach, self-destruct.
 - Every number, effect, cost, probability and structural rule: **identical to the published game.**
 
@@ -125,7 +126,7 @@ Confirmed from the rulebook at spec time, because each one shapes the protocol:
 
 Each milestone is one PR, independently mergeable, with tests.
 
-- [ ] **M1: Walking skeleton + rules capture** — monorepo (`shared`/`engine`/`server`/`web`), CI,
+- [x] **M1: Walking skeleton + rules capture** — monorepo (`shared`/`engine`/`server`/`web`), CI,
       Pages + Render deploy live. Lobby: create/join by room code, pick a role, host starts. Ship
       state is a stub map; the single implemented action is `move`, resolved server-side and
       reflected on every connected client. `PlayerView` projection + redaction test exist from this
