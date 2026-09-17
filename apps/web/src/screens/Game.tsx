@@ -18,13 +18,15 @@ export function Game({ view }: { view: PlayerView }) {
   return (
     <div className="game">
       <header className="rail">
-        <span>ROUND {view.round}</span>
+        <span>TURN {view.turn}</span>
         <span className="muted">
           {yourTurn ? 'Your round' : `${roleLabel(crewRole(view, view.activePlayer))} is acting`}
         </span>
         <span className="actions">
           {'◆'.repeat(view.you.actionsRemaining)}
-          <span className="spent">{'◇'.repeat(2 - view.you.actionsRemaining)}</span>
+          <span className="spent">
+            {'◇'.repeat(Math.max(0, view.actionsPerRound - view.you.actionsRemaining))}
+          </span>
         </span>
       </header>
 
@@ -51,8 +53,8 @@ export function Game({ view }: { view: PlayerView }) {
               .slice(-12)
               .reverse()
               .map((entry, i) => (
-                <li key={`${entry.round}-${i}`}>
-                  <span className="muted">r{entry.round}</span> {entry.text}
+                <li key={`${entry.turn}-${i}`}>
+                  <span className="muted">t{entry.turn}</span> {entry.text}
                 </li>
               ))}
           </ul>

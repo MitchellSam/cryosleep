@@ -41,7 +41,8 @@ export interface RoomState {
  */
 export interface GameState {
   readonly phase: Phase;
-  readonly round: number;
+  /** A turn is one Player Phase plus one Event Phase — RULES.md §3. Not a player's round. */
+  readonly turn: number;
   readonly rngSeed: number;
   readonly players: readonly PlayerState[];
   readonly turnOrder: readonly PlayerId[];
@@ -63,7 +64,7 @@ export interface HiddenState {
 }
 
 export interface LogEntry {
-  readonly round: number;
+  readonly turn: number;
   /** Public events only. Anything secret is summarised, never quoted. */
   readonly text: string;
 }

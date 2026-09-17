@@ -1,3 +1,4 @@
+import { ACTIONS_PER_ROUND } from './content/rules.js';
 import type { RoomId } from './content/ship.js';
 import type { Role } from './content/roles.js';
 import type { CardId, GameState, LogEntry, ObjectiveId, Phase, PlayerId } from './state.js';
@@ -13,7 +14,9 @@ import type { CardId, GameState, LogEntry, ObjectiveId, Phase, PlayerId } from '
  */
 export interface PlayerView {
   readonly phase: Phase;
-  readonly round: number;
+  readonly turn: number;
+  /** Carried so the client never hardcodes the action economy. */
+  readonly actionsPerRound: number;
   readonly activePlayer: PlayerId | null;
   readonly firstPlayer: PlayerId | null;
   readonly turnOrder: readonly PlayerId[];
@@ -75,12 +78,13 @@ export function projectFor(
 
   return {
     phase: state.phase,
-    round: state.round,
+    turn: state.turn,
+    actionsPerRound: ACTIONS_PER_ROUND,
     activePlayer: state.activePlayer,
     firstPlayer: state.firstPlayer,
     turnOrder: [...state.turnOrder],
     rooms: state.rooms.map((r) => ({ id: r.id, explored: r.explored })),
-    log: state.log.map((entry) => ({ round: entry.round, text: entry.text })),
+    log: state.log.map((entry) => ({ turn: entry.turn, text: entry.text })),
     you: {
       id: self.id,
       name: self.name,

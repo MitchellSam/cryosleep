@@ -2,14 +2,15 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import {
   type GameState,
   type LobbyState,
+  MAX_PLAYERS,
+  MIN_PLAYERS,
   ROLES,
   ROOM_CODE_ALPHABET,
   ROOM_CODE_LENGTH,
   type Role,
 } from '@cryosleep/shared';
 
-export const MAX_PLAYERS = 5;
-export const MIN_PLAYERS = 2;
+export { MAX_PLAYERS, MIN_PLAYERS };
 
 export interface Seat {
   readonly id: string;
@@ -22,10 +23,12 @@ export interface Seat {
 
 export interface Room {
   readonly code: string;
-  readonly seats: Seat[];
+  seats: Seat[];
   hostId: string;
   state: GameState | null;
   createdAt: number;
+  /** Refreshed on every socket event, so an in-progress game is never swept away. */
+  lastSeenAt: number;
 }
 
 const rooms = new Map<string, Room>();
@@ -45,7 +48,15 @@ function newCode(): string {
 export function createRoom(hostName: string, socketId: string): { room: Room; seat: Seat } {
   const code = newCode();
   const seat: Seat = { id: randomUUID(), name: hostName, role: null, token: randomUUID(), socketId };
-  const room: Room = { code, seats: [seat], hostId: seat.id, state: null, createdAt: Date.now() };
+  const now = Date.now();
+  const room: Room = {
+    code,
+    seats: [seat],
+    hostId: seat.id,
+    state: null,
+    createdAt: now,
+    lastSeenAt: now,
+  };
   rooms.set(code, room);
   return { room, seat };
 }
@@ -62,7 +73,26 @@ export function joinRoom(code: string, name: string, socketId: string): { room: 
 
   const seat: Seat = { id: randomUUID(), name, role: null, token: randomUUID(), socketId };
   room.seats.push(seat);
+  room.lastSeenAt = Date.now();
   return { room, seat };
+}
+
+/**
+ * Leaving frees the seat, but only before the game starts: mid-game the seat has
+ * to stay, because the crew member is on the board and the turn order runs
+ * through them.
+ */
+export function leaveRoom(room: Room, seat: Seat): void {
+  if (room.state) throw new Error('you cannot leave a game in progress');
+
+  room.seats = room.seats.filter((s) => s.id !== seat.id);
+  room.lastSeenAt = Date.now();
+
+  if (room.hostId === seat.id) {
+    const successor = room.seats[0];
+    if (successor) room.hostId = successor.id;
+  }
+  if (room.seats.length === 0) rooms.delete(room.code);
 }
 
 export function rejoin(code: string, token: string, socketId: string): { room: Room; seat: Seat } {
@@ -73,6 +103,7 @@ export function rejoin(code: string, token: string, socketId: string): { room: R
   if (!seat) throw new Error('that seat is not in this room');
 
   seat.socketId = socketId;
+  room.lastSeenAt = Date.now();
   return { room, seat };
 }
 
@@ -108,6 +139,11 @@ export function lobbyStateOf(room: Room): LobbyState {
   };
 }
 
+/** Marks a room as still in use, so the sweeper leaves it alone. */
+export function touch(room: Room): void {
+  room.lastSeenAt = Date.now();
+}
+
 export function disconnect(socketId: string): Room[] {
   const touched: Room[] = [];
   for (const room of rooms.values()) {
@@ -121,11 +157,17 @@ export function disconnect(socketId: string): Room[] {
   return touched;
 }
 
-/** Drops rooms nobody has been connected to for an hour. */
+export const IDLE_SWEEP_MS = 60 * 60 * 1000;
+
+/**
+ * Drops rooms that have been entirely disconnected for an hour. Keyed off
+ * lastSeenAt, not createdAt: a long game whose players all briefly drop —
+ * a wifi blip, a server restart, two refreshes at once — must survive.
+ */
 export function sweep(now = Date.now()): void {
   for (const [code, room] of rooms) {
     const empty = room.seats.every((s) => s.socketId === null);
-    if (empty && now - room.createdAt > 60 * 60 * 1000) rooms.delete(code);
+    if (empty && now - room.lastSeenAt > IDLE_SWEEP_MS) rooms.delete(code);
   }
 }
 

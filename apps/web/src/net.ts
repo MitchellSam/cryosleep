@@ -74,6 +74,10 @@ export const useNet = create<NetState>((set, get) => ({
     socket.on('lobby', (lobby: LobbyState) => set({ lobby, view: null }));
     socket.on('view', (view: PlayerView) => set({ view }));
     socket.on('error_message', (payload: ErrorPayload) => set({ error: payload.message }));
+    socket.on('left', () => {
+      writeSession(null);
+      set({ playerId: null, code: null, lobby: null, view: null, error: null });
+    });
 
     set({ socket });
   },
@@ -84,10 +88,12 @@ export const useNet = create<NetState>((set, get) => ({
   startGame: () => get().socket?.emit('startGame', {}),
   submitAction: (action) => get().socket?.emit('submitAction', { action }),
 
-  leave: () => {
-    writeSession(null);
-    set({ playerId: null, code: null, lobby: null, view: null, error: null });
-  },
+  /**
+   * Leaving has to go through the server: clearing local state alone leaves the
+   * seat occupied and apparently connected, so the room could start a game with
+   * a player who will never act and sit on their turn forever.
+   */
+  leave: () => get().socket?.emit('leaveRoom', {}),
 
   dismissError: () => set({ error: null }),
 }));

@@ -86,8 +86,8 @@ describe('applyAction: pass', () => {
   it('refuses a second action after passing', () => {
     let state = applyAction(createGame(seats, 1), 'p1', { kind: 'pass' }).state;
     state = applyAction(state, 'p2', { kind: 'pass' }).state;
-    // Round rolled over, so p1 is active again and no longer passed.
-    expect(state.round).toBe(2);
+    // Turn rolled over. The First Player token passed a seat, so p2 leads now.
+    expect(state.turn).toBe(2);
     expect(state.players.every((p) => !p.passed)).toBe(true);
   });
 
@@ -96,8 +96,9 @@ describe('applyAction: pass', () => {
     state = applyAction(state, 'p1', { kind: 'pass' }).state;
     const result = applyAction(state, 'p2', { kind: 'pass' });
 
-    expect(result.state.round).toBe(2);
-    expect(result.state.activePlayer).toBe('p1');
-    expect(result.events).toContain('All crew have passed. A new round begins.');
+    expect(result.state.turn).toBe(2);
+    expect(result.state.firstPlayer).toBe('p2');
+    expect(result.state.activePlayer).toBe('p2');
+    expect(result.events).toContain('All crew have passed. A new turn begins.');
   });
 });

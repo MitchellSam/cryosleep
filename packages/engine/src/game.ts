@@ -1,4 +1,5 @@
 import {
+  ACTIONS_PER_ROUND,
   type Action,
   type GameState,
   type LegalAction,
@@ -10,8 +11,7 @@ import {
   neighboursOf,
 } from '@cryosleep/shared';
 
-/** Actions per round — RULES.md §3.1. */
-export const ACTIONS_PER_ROUND = 2;
+export { ACTIONS_PER_ROUND };
 
 export interface SeatSpec {
   readonly id: PlayerId;
@@ -46,14 +46,14 @@ export function createGame(seats: readonly SeatSpec[], seed: number): GameState 
 
   return {
     phase: 'player',
-    round: 1,
+    turn: 1,
     rngSeed: seed,
     players,
     turnOrder,
     firstPlayer: turnOrder[0] ?? null,
     activePlayer: turnOrder[0] ?? null,
     rooms: ROOMS.map((room) => ({ id: room.id, explored: room.kind === 'special' })),
-    log: [{ round: 1, text: 'The crew wake in the Cryobay.' }],
+    log: [{ turn: 1, text: 'The crew wake in the Cryobay.' }],
     hidden: { unexploredTileFaces: {}, bag: [], deckOrder: [] },
   };
 }
@@ -113,23 +113,35 @@ function endRound(state: GameState, self: PlayerState, events: readonly string[]
 
   const active = nextActivePlayer(next, self.id);
   if (active === null) {
-    // Everyone has passed. The Event Phase lands in M4; for now a new round starts.
+    // Everyone has passed, so the turn ends. The Event Phase itself lands in M4;
+    // what is faithful already is that the First Player token passes one seat
+    // and the next Player Phase starts with its holder — RULES.md §3.1(2).
+    const firstPlayer = nextFirstPlayer(next);
     next = {
       ...next,
-      round: next.round + 1,
+      turn: next.turn + 1,
       players: next.players.map((p) => ({ ...p, passed: false })),
-      activePlayer: next.turnOrder[0] ?? null,
-      log: [...next.log, ...events.map((text) => ({ round: next.round, text }))],
+      firstPlayer,
+      activePlayer: firstPlayer,
+      log: [...next.log, ...events.map((text) => ({ turn: next.turn, text }))],
     };
-    return { state: next, events: [...events, 'All crew have passed. A new round begins.'] };
+    return { state: next, events: [...events, 'All crew have passed. A new turn begins.'] };
   }
 
   next = {
     ...next,
     activePlayer: active,
-    log: [...next.log, ...events.map((text) => ({ round: next.round, text }))],
+    log: [...next.log, ...events.map((text) => ({ turn: next.turn, text }))],
   };
   return { state: next, events };
+}
+
+/** The First Player token passes one seat to the left each turn — RULES.md §3.1(2). */
+function nextFirstPlayer(state: GameState): PlayerId | null {
+  const order = state.turnOrder;
+  if (order.length === 0) return null;
+  const current = state.firstPlayer === null ? -1 : order.indexOf(state.firstPlayer);
+  return order[(current + 1) % order.length] ?? null;
 }
 
 function nextActivePlayer(state: GameState, after: PlayerId): PlayerId | null {

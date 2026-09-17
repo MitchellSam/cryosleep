@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import { createServer } from 'node:http';
 import { Server, type Socket } from 'socket.io';
 import {
@@ -16,9 +17,11 @@ import {
   disconnect,
   getRoom,
   joinRoom,
+  leaveRoom,
   lobbyStateOf,
   rejoin,
   sweep,
+  touch,
 } from './rooms.js';
 
 export interface RunningServer {
@@ -56,10 +59,17 @@ export function startServer(port = 0): Promise<RunningServer> {
       return;
     }
 
+    // Connectivity lives on the seat, not in the rules, so it is stamped onto the
+    // state we project rather than tracked by the engine.
+    const connected = new Set(room.seats.filter((s) => s.socketId).map((s) => s.id));
+    const state = {
+      ...room.state,
+      players: room.state.players.map((p) => ({ ...p, connected: connected.has(p.id) })),
+    };
+
     for (const seat of room.seats) {
       if (!seat.socketId) continue;
-      const legal = legalActionsFor(room.state, seat.id);
-      io.to(seat.socketId).emit('view', projectFor(seat.id, room.state, legal));
+      io.to(seat.socketId).emit('view', projectFor(seat.id, state, legalActionsFor(state, seat.id)));
     }
   }
 
@@ -120,6 +130,16 @@ export function startServer(port = 0): Promise<RunningServer> {
       try {
         const { code, token } = clientMessages.rejoin.parse(raw);
         const { room, seat } = rejoin(code, token, socket.id);
+
+        // A seat is one player: drop any older socket still claiming it, or two
+        // connections could submit actions as the same crew member.
+        for (const [socketId, session] of sessions) {
+          if (socketId !== socket.id && session.seatId === seat.id) {
+            sessions.delete(socketId);
+            io.sockets.sockets.get(socketId)?.disconnect(true);
+          }
+        }
+
         sessions.set(socket.id, { code: room.code, seatId: seat.id });
         socket.emit('joined', joined(room, seat));
         broadcast(room);
@@ -139,6 +159,18 @@ export function startServer(port = 0): Promise<RunningServer> {
       }
     });
 
+    socket.on('leaveRoom', () => {
+      try {
+        const { room, seat } = seatOf(socket);
+        leaveRoom(room, seat);
+        sessions.delete(socket.id);
+        socket.emit('left', {});
+        broadcast(room);
+      } catch (error) {
+        fail(socket, error);
+      }
+    });
+
     socket.on('startGame', () => {
       try {
         const { room, seat } = seatOf(socket);
@@ -149,7 +181,10 @@ export function startServer(port = 0): Promise<RunningServer> {
           if (!s.role) throw new Error('every crew member needs a role first');
           return { id: s.id, name: s.name, role: s.role };
         });
-        room.state = createGame(seats, Date.now() >>> 0);
+        // Not Date.now(): once the bag and deck orders derive from this seed, a
+        // millisecond-resolution guess against an open-source engine would
+        // reconstruct exactly what projectFor exists to hide.
+        room.state = createGame(seats, randomInt(0, 2 ** 32));
         broadcast(room);
       } catch (error) {
         fail(socket, error);
@@ -163,6 +198,7 @@ export function startServer(port = 0): Promise<RunningServer> {
         if (!room.state) throw new Error('the game has not started');
 
         room.state = applyAction(room.state, seat.id, action).state;
+        touch(room);
         broadcast(room);
       } catch (error) {
         fail(socket, error);

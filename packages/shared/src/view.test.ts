@@ -33,7 +33,7 @@ function player(id: string, overrides: Partial<PlayerState> = {}): PlayerState {
 function state(): GameState {
   return {
     phase: 'player',
-    round: 1,
+    turn: 1,
     rngSeed: 42,
     players: [
       player('alice', { hand: [ALICE_CARD], objectives: [ALICE_OBJECTIVE], lightWounds: 1 }),
@@ -110,8 +110,9 @@ describe('projectFor', () => {
         'firstPlayer',
         'legalActions',
         'log',
+        'actionsPerRound',
         'phase',
-        'round',
+        'turn',
         'rooms',
         'turnOrder',
         'you',

@@ -29,6 +29,7 @@ export const clientMessages = {
   joinRoom: z.object({ code: roomCodeSchema, name: playerNameSchema }),
   rejoin: z.object({ code: roomCodeSchema, token: z.string().min(1) }),
   chooseRole: z.object({ role: roleSchema }),
+  leaveRoom: z.object({}),
   startGame: z.object({}),
   submitAction: z.object({ action: actionSchema }),
 } as const;

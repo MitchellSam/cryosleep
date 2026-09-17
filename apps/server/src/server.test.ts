@@ -202,6 +202,50 @@ describe('lobby', () => {
     expect((await guest.take<ErrorPayload>('error_message')).message).toMatch(/only the host/);
   });
 
+  it('frees the seat when a player leaves, so the room cannot start without them', async () => {
+    const host = client();
+    const guest = client();
+
+    host.emit('createRoom', { name: 'host' });
+    const joined = await host.take<JoinedPayload>('joined');
+    guest.emit('joinRoom', { code: joined.code, name: 'guest' });
+    await guest.take<JoinedPayload>('joined');
+
+    host.emit('chooseRole', { role: 'captain' });
+    guest.emit('chooseRole', { role: 'scout' });
+    await host.take<LobbyState>('lobby', (l) => l.canStart);
+
+    guest.emit('leaveRoom', {});
+    const lobby = await host.take<LobbyState>('lobby', (l) => l.seats.length === 1);
+
+    expect(lobby.canStart).toBe(false);
+    expect(lobby.seats.map((seat) => seat.name)).toEqual(['host']);
+  });
+
+  it('hands the host role to someone else when the host leaves', async () => {
+    const host = client();
+    const guest = client();
+
+    host.emit('createRoom', { name: 'host' });
+    const joined = await host.take<JoinedPayload>('joined');
+    guest.emit('joinRoom', { code: joined.code, name: 'guest' });
+    await guest.take<JoinedPayload>('joined');
+    await guest.take<LobbyState>('lobby', (l) => l.seats.length === 2);
+
+    host.emit('leaveRoom', {});
+    const lobby = await guest.take<LobbyState>('lobby', (l) => l.seats.length === 1);
+
+    expect(lobby.seats[0]?.name).toBe('guest');
+    expect(lobby.seats[0]?.isHost).toBe(true);
+  });
+
+  it('refuses to free a seat once the game is under way', async () => {
+    const { guest } = await twoPlayerGame();
+
+    guest.emit('leaveRoom', {});
+    expect((await guest.take<ErrorPayload>('error_message')).message).toMatch(/in progress/);
+  });
+
   it('returns a refreshed player to their own seat', async () => {
     const host = client();
     host.emit('createRoom', { name: 'host' });
@@ -216,6 +260,25 @@ describe('lobby', () => {
 });
 
 describe('a started game', () => {
+  it('shows a dropped crew member as disconnected', async () => {
+    const { host, guest } = await twoPlayerGame();
+
+    guest.close();
+    const view = await host.take<PlayerView>('view', (v) => v.crew.every((c) => !c.connected));
+
+    expect(view.crew).toHaveLength(1);
+    expect(view.crew[0]?.connected).toBe(false);
+  });
+
+  it('carries the action economy in the view rather than leaving it to the client', async () => {
+    const { host } = await twoPlayerGame();
+
+    host.emit('submitAction', { action: { kind: 'pass' } });
+    const view = await host.take<PlayerView>('view');
+
+    expect(view.actionsPerRound).toBe(2);
+  });
+
   it('sends both players a view of the same ship', async () => {
     const { host, guest } = await twoPlayerGame();
 
