@@ -1,0 +1,144 @@
+# Cryosleep — Spec
+
+Status: APPROVED          <!-- DRAFT | APPROVED; /build refuses to run on DRAFT -->
+
+## Overview
+
+A semi-cooperative online survival-horror board game in the vein of *Nemesis* (Awaken Realms),
+rebuilt as an original-fiction reskin — the same mechanical skeleton, none of its text, names, or art.
+Two to five players wake from cryosleep aboard a crippled deep-space hauler with something loose in
+the vents. Everyone is trying to survive; each player also holds a **secret objective**, and some of
+those objectives require the ship to burn or a specific crewmate not to make it home.
+
+Unlike [zero-patients/](../zero-patients/), there is no shared board screen: every player plays on
+their own device with their own full view of the ship, and the server decides what each of them is
+allowed to see. Characters are identified by **role only** — Scout, Mechanic, Soldier, Scientist,
+Pilot, Captain, Doctor — never by personal name.
+
+## Definition of Done
+
+1. Client live at `https://mitchellsam.github.io/cryosleep/` and loading into the lobby.
+2. Socket server live on Render free tier, reachable from that client (create-room round-trips).
+3. All milestones merged to `main`, CI green on `main`.
+4. `npm test` covers the full rules engine; the hidden-information leak test (M9) passes in CI.
+5. A complete 3-player game — cryosleep → exploration → intruders → escape/destruction → objective
+   reveal — played end to end on three separate devices, with at least one game won by a betrayal
+   objective. This is a human gate; /ship reports it as the last checklist item.
+
+## Non-goals (v1)
+
+- **Solo / AI-driven play.** No bot crew, no bot opponents. Multiplayer only, 2–5 humans.
+- **Expansion content.** Base game only — no Aftermath, Void Seeders, Carnomorphs analogues.
+- **Accounts, matchmaking, persistence across sessions.** Room codes, in-memory rooms, one node.
+- **Art.** Functional SVG/CSS ship map and card layouts. No illustration pass; no audio.
+- **Spectators, replays, tournament tooling.**
+- **Mobile-native apps.** Responsive web only.
+- **A balance-tuning sim harness** (see Follow-ups).
+
+## Legal note
+
+Game mechanics and systems are not copyrightable; specific text, names, characters, and art are.
+Every card title, ability line, room name, creature name, event, and objective in this project is
+written fresh for our own fiction. No scanned or transcribed component text enters the repo. The
+README credits *Nemesis* as the inspiration and states clearly that this is an unofficial,
+non-commercial original-fiction reimplementation.
+
+## Tech
+
+| Choice | Reason |
+|---|---|
+| TypeScript strict, npm workspaces monorepo | Same shape as zero-patients — proven here, zero ramp-up. |
+| `packages/shared` — zod schemas for protocol + content data | One source of truth for wire types, validated at the socket edge. |
+| `packages/engine` — pure `applyAction(state, playerId, action) → {state, events}` | No I/O, seeded RNG held *in state* → deterministic, replayable, unit-testable. |
+| `apps/server` — Node 22 + socket.io + tsx | Authoritative referee; rooms by 4-letter code; reconnect tokens. Mirrors zero-patients' server so Render deploy is copy-paste. |
+| `apps/web` — Vite + React 19 + zustand + react-router | Static client, deployable to GitHub Pages; `base: '/cryosleep/'`. |
+| vitest | Engine suite + protocol contract tests. |
+| Per-player **view projection** in `shared` (`projectFor(playerId, state)`) | Secrecy is a typed boundary, not a convention — the only way state reaches a client. |
+| GitHub Pages (client) + Render free tier (server), `render.yaml` blueprint | Same split and cost as zero-patients: $0. |
+
+**Hidden-information rule (architectural, enforced from M1):** the full `GameState` never leaves the
+server. Clients receive only `PlayerView`, produced by a single projection function. Objectives,
+other players' hands, deck order, bag contents, unexplored room tiles, and contamination status live
+behind it. Any new secret state must be added to the projection's redaction test or CI fails.
+
+## Content and rules capture
+
+M1 also produces `RULES.md` — our own-words specification of the rules the engine implements
+(round structure, action costs, noise table, bag composition, damage values, deck sizes) — and
+`RULES-GAPS.md` for open questions, exactly as card-battler does. The engine implements `RULES.md`;
+`RULES.md` is the thing reviewed for fidelity and for originality of expression. Reskin naming
+(ship, rooms, creature types, roles, items, events) is decided there and lives in
+`packages/shared/src/content/` as data, never hardcoded in the UI.
+
+## Milestones
+
+Each milestone is one PR, independently mergeable, with tests.
+
+- [ ] **M1: Walking skeleton + rules capture** — monorepo (`shared`/`engine`/`server`/`web`), CI,
+      Pages + Render deploy live. Lobby: create/join by room code, pick a role, host starts. Ship
+      state is a stub map; the single implemented action is `move`, resolved server-side and
+      reflected on every connected client. `PlayerView` projection + redaction test exist from this
+      commit. `RULES.md` + `RULES-GAPS.md` written and reviewed.
+      *Acceptance:* two browsers join a room from the Pages URL, both see the map, one moves and both
+      see it; CI green; `projectFor` test asserts a stub secret never appears in another player's view.
+
+- [ ] **M2: Ship, exploration, noise** — full room graph and corridors, face-down room tiles revealed
+      on entry, doors (open/closed/damaged), Move vs. careful move, the noise roll and noise markers,
+      the encounter trigger (spawns a placeholder token for now). Seeded RNG through every roll.
+      *Acceptance:* engine tests pin the noise/encounter table per seed; a client can explore the
+      whole ship; identical seeds replay identically.
+
+- [ ] **M3: Intruders** — the token bag (types, counts, development/escalation), spawning from
+      encounters and events, intruder movement toward noise, per-type stats and behaviour, surprise
+      attacks, the weakness deck.
+      *Acceptance:* seeded bag-draw and development tests; spawn/move rules covered; an intruder can
+      find and reach a player across the map in a scripted test.
+
+- [ ] **M4: Round structure and the action economy** — per-role action decks (role-unique cards mixed
+      with the common set), hand draw/discard/exhaust, two actions per turn, passing, turn-order
+      tokens, and the Player → Event → Cleanup round loop.
+      *Acceptance:* a full scripted round runs in the engine with all five players; hands are private
+      in the projection; the hand UI renders on each device.
+
+- [ ] **M5: Combat, wounds, death** — the attack action, weapons and ammunition, intruder attack decks
+      and retaliation, light and serious wounds, the wound deck, death and what it leaves behind
+      (corpse, dropped items, cards out of play).
+      *Acceptance:* combat resolution incl. retaliation and death thresholds covered by tests; a
+      player can be killed by an intruder and the table sees the correct public result.
+
+- [ ] **M6: Contamination and infection** — contamination cards polluting the action deck, their
+      sources, scanning/analysis room actions, infection development, the chest-larva timer and death,
+      cures and removal.
+      *Acceptance:* engine tests for each contamination source and for infection progression; a
+      player's own contamination status is visible to them and hidden from others per `RULES.md`.
+
+- [ ] **M7: Items, search, crafting, room actions** — per-room search decks, item cards and their
+      effects, crafting recipes and components, powered room actions.
+      *Acceptance:* every item and recipe in `RULES.md` has a test; the client can search, craft, and
+      use a room action end to end.
+
+- [ ] **M8: Ship systems, events, the clock** — engines, cockpit/course, fire, malfunctions, hull
+      breach, self-destruct sequence, the round track and the arrival deadline, and the event deck
+      driving all of it.
+      *Acceptance:* each event card has a test; a scripted game reaches both "ship lands" and "ship
+      destroyed" states.
+
+- [ ] **M9: Objectives, escape, adjudication** — the secret objective deck (survival, corporate, and
+      betrayal objectives), escape pods and their capacity/launch rules, returning to cryosleep,
+      end-of-game per-player win/lose adjudication, and the full-table objective reveal.
+      *Acceptance:* every objective type has a test; a game is playable start to finish to a result;
+      the CI **leak audit** fuzzes `projectFor` over generated states and asserts no objective, hand,
+      deck order, bag content, or unrevealed tile appears in a view that shouldn't hold it.
+
+- [ ] **M10: Client pass** — reconnect after refresh/disconnect, in-game log of public events,
+      end-of-game reveal screen, legality-aware action affordances, responsive layout down to phone
+      width, and the README/PIPELINE updates.
+      *Acceptance:* a refreshed browser rejoins mid-game with correct private state; the game is
+      playable on a phone; docs match the implementation.
+
+## Follow-ups after v1
+
+- Headless sim harness + scripted agents (card-battler's `packages/sim` model) for balance verdicts.
+- Solo mode against engine-driven intruders.
+- Art and audio pass; animations.
+- Redis-backed rooms for multi-node.

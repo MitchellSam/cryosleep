@@ -1,0 +1,28 @@
+{
+  "name": "cryosleep",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Semi-cooperative online survival horror — an original-fiction reimplementation in the vein of Nemesis",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "build": "npm run build --workspace @cryosleep/web",
+    "dev:web": "npm run dev --workspace @cryosleep/web",
+    "dev:server": "npm run dev --workspace @cryosleep/server"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.19.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
