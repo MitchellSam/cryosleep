@@ -101,7 +101,7 @@ describe('projectFor', () => {
 
   it('carries no key from GameState that is not declared on PlayerView', () => {
     // Guards against someone "fixing" projectFor with a spread of state.
-    const view = projectFor('alice', state()) as Record<string, unknown>;
+    const view = projectFor('alice', state()) as unknown as Record<string, unknown>;
 
     expect(Object.keys(view).sort()).toEqual(
       [
