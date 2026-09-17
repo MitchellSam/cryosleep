@@ -6,7 +6,10 @@ Cryosleep — a semi-cooperative online survival-horror board game for 2–5 pla
 Nemesis (Awaken Realms), rebuilt as an **original-fiction reskin**: the mechanical skeleton is
 reimplemented, none of the published text, names, or art is. Crew are identified by **role only**
 (scout, mechanic, soldier, scientist, pilot, captain, doctor) — never by a personal name. Every
-player plays on their own device; there is no shared board screen.
+player plays on their own computer, from wherever they are — there is no shared board screen and no
+phone-controller layer. Voice happens outside the app (Discord).
+
+**Desktop browser only.** One dense screen at laptop size and up; no responsive/mobile work.
 
 Type: static (Vite client on GitHub Pages) + a socket.io server on Render. Spec lives in SPEC.md —
 it is the source of truth for scope and the definition of done.
@@ -17,10 +20,13 @@ it is the source of truth for scope and the definition of done.
   receive only a `PlayerView` from the single `projectFor(playerId, state)` projection in
   `packages/shared`. Objectives, other players' hands, deck order, bag contents, unexplored tiles
   and contamination live behind it. Any new secret field must be covered by the redaction test or
-  CI fails.
-- **No licensed text.** Card titles, abilities, room names, creature names, events and objectives
-  are written fresh for our own fiction. Nothing is transcribed from the published game. `RULES.md`
-  is our own-words rules spec; the engine implements `RULES.md`.
+  CI fails. This is an anti-cheat boundary (a player can open devtools), *not* a UI-concealment
+  one — a player's own secrets are shown plainly on their own screen, since nobody is screensharing.
+- **Faithful rules, original text.** The rules match the published base game exactly — numbers,
+  effects, structure, edge cases. `RULES.md` is that spec in our own words, sourced from the
+  official rulebook; the engine implements `RULES.md`, and a rules question is answered by checking
+  the rulebook, not by inventing a ruling. What we replace is *naming and flavour only*: ship,
+  room, creature, item, event and objective names and descriptive text are written fresh.
 - **No rules in the UI.** All rules, effect and config text comes from the engine/content data
   (`packages/shared/src/content/`), never hardcoded in `apps/web`.
 - **The engine is pure.** No I/O, no `Math.random` — seeded RNG lives in state, so games are

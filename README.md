@@ -10,9 +10,10 @@ reimplementation inspired by the tabletop game *Nemesis* (Awaken Realms) — the
 reimplemented from scratch and every card, room, creature and objective is written fresh for our
 own setting. Crew are identified by role, never by name.
 
-**Play it:** https://mitchellsam.github.io/cryosleep/ *(once M1 ships)* — each player opens it on
-their own device and joins with a room code. The server runs on Render's free tier and sleeps when
-idle, so the first game of a session takes ~30–60s to start while it wakes.
+**Play it:** https://mitchellsam.github.io/cryosleep/ *(once M1 ships)* — each player opens it in a
+desktop browser, wherever they are, and joins with a room code. Bring your own voice chat. The
+server runs on Render's free tier and sleeps when idle, so the first game of a session takes
+~30–60s to start while it wakes.
 
 ## Architecture
 
@@ -28,7 +29,7 @@ packages/
 apps/
 ├── server/    # socket.io: rooms, reconnect tokens, action routing, per-player views
 │              # npm run dev:server (PORT=3001)
-└── web/       # Vite + React: lobby + per-player ship view
+└── web/       # Vite + React: lobby + per-player ship view (desktop only)
                # npm run dev:web (5173, VITE_SERVER_URL to point elsewhere)
 ```
 

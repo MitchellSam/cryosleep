@@ -5,7 +5,8 @@ Status: APPROVED          <!-- DRAFT | APPROVED; /build refuses to run on DRAFT 
 ## Overview
 
 A semi-cooperative online survival-horror board game in the vein of *Nemesis* (Awaken Realms),
-rebuilt as an original-fiction reskin — the same mechanical skeleton, none of its text, names, or art.
+rebuilt as an original-fiction reskin: the base game's rules reproduced faithfully, with our own
+names, flavour and art direction in place of its text.
 Two to five players wake from cryosleep aboard a crippled deep-space hauler with something loose in
 the vents. Everyone is trying to survive; each player also holds a **secret objective**, and some of
 those objectives require the ship to burn or a specific crewmate not to make it home.
@@ -32,7 +33,8 @@ Pilot, Captain, Doctor — never by personal name.
 - **Accounts, matchmaking, persistence across sessions.** Room codes, in-memory rooms, one node.
 - **Art.** Functional SVG/CSS ship map and card layouts. No illustration pass; no audio.
 - **Spectators, replays, tournament tooling.**
-- **Mobile-native apps.** Responsive web only.
+- **Mobile and tablet.** Desktop browser only — the UI is a single dense screen sized for a laptop
+  or larger. No responsive breakpoints, no touch targets, no phone layout.
 - **A balance-tuning sim harness** (see Follow-ups).
 
 ## Legal note
@@ -63,12 +65,31 @@ behind it. Any new secret state must be added to the projection's redaction test
 
 ## Content and rules capture
 
-M1 also produces `RULES.md` — our own-words specification of the rules the engine implements
-(round structure, action costs, noise table, bag composition, damage values, deck sizes) — and
-`RULES-GAPS.md` for open questions, exactly as card-battler does. The engine implements `RULES.md`;
-`RULES.md` is the thing reviewed for fidelity and for originality of expression. Reskin naming
-(ship, rooms, creature types, roles, items, events) is decided there and lives in
-`packages/shared/src/content/` as data, never hardcoded in the UI.
+**Fidelity is the standard: the rules match the published game.** M1 produces `RULES.md` — a
+complete, our-own-words specification of the base-game rules, derived from the official Awaken
+Realms rulebook (`https://cdn.1j1ju.com/medias/7a/6e/2f-nemesis-rulebook.pdf`, 28pp, base game) and
+the official FAQ. Round structure, action costs, the noise table, bag composition, damage values,
+deck sizes, wound and contamination rules are reproduced exactly, not approximated. `RULES-GAPS.md`
+holds the ambiguities and the ruling we adopted for each, with a source line.
+
+The reskin is **naming and flavour only**: our own ship, room, creature, item, event and objective
+names and descriptive text, so no published expression is copied. Numbers, effects and structure
+are the published game's. The rulebook PDF itself is a reference, not a repo artifact — it is not
+committed.
+
+Reskin naming lives in `packages/shared/src/content/` as data, never hardcoded in the UI.
+
+Confirmed from the rulebook at spec time, because each one shapes the protocol:
+
+- **Objectives:** each player is dealt **two** (1 Corporate + 1 Personal), both secret; at the first
+  Intruder encounter they choose one and the other is removed from the game face down, unseen.
+- **Items:** normal Items sit in a hidden Inventory — other players see the *card backs and their
+  colour*, not the card. Using an Item reveals it to everyone. Heavy Items and Objects occupy the
+  two Hand slots and can **never** be hidden.
+- **Contamination:** a Contamination card's INFECTED status is hidden **from its owner too**, until
+  scanned. The owner knows only that the card is contamination.
+- **Wounds are public.** Light Wounds are markers on the character board; Serious Wound cards sit
+  face up beside it (a Dressed one is flipped, effect ignored, still counting toward the limit of 3).
 
 ## Milestones
 
@@ -131,10 +152,10 @@ Each milestone is one PR, independently mergeable, with tests.
       deck order, bag content, or unrevealed tile appears in a view that shouldn't hold it.
 
 - [ ] **M10: Client pass** — reconnect after refresh/disconnect, in-game log of public events,
-      end-of-game reveal screen, legality-aware action affordances, responsive layout down to phone
-      width, and the README/PIPELINE updates.
-      *Acceptance:* a refreshed browser rejoins mid-game with correct private state; the game is
-      playable on a phone; docs match the implementation.
+      end-of-game reveal screen, legality-aware action affordances, keyboard shortcuts for the
+      common actions, and the README/PIPELINE updates.
+      *Acceptance:* a refreshed browser rejoins mid-game with correct private state; the whole game
+      state is readable without scrolling at 1440×900; docs match the implementation.
 
 ## Follow-ups after v1
 
