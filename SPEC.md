@@ -72,12 +72,42 @@ the official FAQ. Round structure, action costs, the noise table, bag compositio
 deck sizes, wound and contamination rules are reproduced exactly, not approximated. `RULES-GAPS.md`
 holds the ambiguities and the ruling we adopted for each, with a source line.
 
-The reskin is **naming and flavour only**: our own ship, room, creature, item, event and objective
-names and descriptive text, so no published expression is copied. Numbers, effects and structure
-are the published game's. The rulebook PDF itself is a reference, not a repo artifact — it is not
-committed.
+The rulebook PDF itself is a reference, not a repo artifact — it is not committed.
 
-Reskin naming lives in `packages/shared/src/content/` as data, never hardcoded in the UI.
+### Naming policy
+
+Players who know the original should recognise this game immediately. Recognition comes from the
+mechanics — the token bag, the noise roll, two actions, contamination — not from proper nouns, so
+we keep the vocabulary that is generic English or generic sci-fi and rewrite only what the
+publisher actually coined.
+
+**Keep verbatim** — generic terms, not the publisher's inventions, many of them older than the
+game (it is itself an Alien homage):
+
+- Rooms: Cockpit, Engine Room, Laboratory, Generator, Airlock, Bridge, Surgery, Storage, Armory,
+  Control Room, Escape Pods, Nest.
+- Creature life stages and tokens: Larva, Adult, Queen, Egg, Creeper, Breeder — biological nouns.
+- Character roles: scout, mechanic, captain, pilot, scientist, soldier, doctor — occupational nouns,
+  already our seven classes.
+- Common item and system words: flamethrower, medkit, grenade, coordinates, hull breach, self-destruct.
+- Every number, effect, cost, probability and structural rule: **identical to the published game.**
+
+**Rename** — actual coinages, or words that function as the game's identity:
+
+- `Hibernatorium` → our own term for the cryo bay.
+- `Intruder` as the species proper noun → our own creature name. This is the single most
+  identifying word in the original; the life-stage nouns above stay.
+- Every card *title*: events, serious wounds, objectives, contamination, weaknesses.
+
+**Never**: the original's title, logo, art, visual design, or its name anywhere in the repo, URL,
+page title, or metadata. And **all card text is written fresh** — ability wording and flavour text
+are the publisher's expression, and are the one thing never copied even in paraphrase-adjacent form.
+
+The README carries an "unofficial, non-commercial, not affiliated" disclaimer. If the publisher ever
+objects, we comply immediately — that, not the wording above, is the real protection.
+
+All naming lives in `packages/shared/src/content/` as data, never hardcoded in the UI, so any of it
+can be changed without touching the engine or the client.
 
 Confirmed from the rulebook at spec time, because each one shapes the protocol:
 
