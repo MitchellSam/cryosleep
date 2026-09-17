@@ -13,8 +13,8 @@ those objectives require the ship to burn or a specific crewmate not to make it 
 
 Unlike [zero-patients/](../zero-patients/), there is no shared board screen: every player plays on
 their own device with their own full view of the ship, and the server decides what each of them is
-allowed to see. Characters are identified by **role only** — Scout, Mechanic, Soldier, Scientist,
-Pilot, Captain, Doctor — never by personal name.
+allowed to see. Characters are identified by **role only** — Captain, Pilot, Scientist, Scout,
+Soldier, Mechanic — never by personal name.
 
 ## Definition of Done
 
@@ -87,8 +87,9 @@ game (it is itself an Alien homage):
 - Rooms: Cockpit, Engine Room, Laboratory, Generator, Airlock, Bridge, Surgery, Storage, Armory,
   Control Room, Escape Pods, Nest.
 - Creature life stages and tokens: Larva, Adult, Queen, Egg, Creeper, Breeder — biological nouns.
-- Character roles: scout, mechanic, captain, pilot, scientist, soldier, doctor — occupational nouns,
-  already our seven classes.
+- Character roles: captain, pilot, scientist, scout, soldier, mechanic — occupational nouns, and the
+  published game's six classes exactly. (An earlier draft of this spec listed seven, inventing a
+  doctor; fidelity wins — there are six.)
 - Common item and system words: flamethrower, medkit, grenade, coordinates, hull breach, self-destruct.
 - Every number, effect, cost, probability and structural rule: **identical to the published game.**
 
@@ -125,7 +126,7 @@ Confirmed from the rulebook at spec time, because each one shapes the protocol:
 
 Each milestone is one PR, independently mergeable, with tests.
 
-- [ ] **M1: Walking skeleton + rules capture** — monorepo (`shared`/`engine`/`server`/`web`), CI,
+- [x] **M1: Walking skeleton + rules capture** — monorepo (`shared`/`engine`/`server`/`web`), CI,
       Pages + Render deploy live. Lobby: create/join by room code, pick a role, host starts. Ship
       state is a stub map; the single implemented action is `move`, resolved server-side and
       reflected on every connected client. `PlayerView` projection + redaction test exist from this
@@ -137,7 +138,9 @@ Each milestone is one PR, independently mergeable, with tests.
       on entry, doors (open/closed/damaged), Move vs. careful move, the noise roll and noise markers,
       the encounter trigger (spawns a placeholder token for now). Seeded RNG through every roll.
       *Acceptance:* engine tests pin the noise/encounter table per seed; a client can explore the
-      whole ship; identical seeds replay identically.
+      whole ship; identical seeds replay identically; **an unexplored room's identity reaches the
+      client only through `PublicRoom` once revealed** — never as shipped content the client masks
+      in the UI, which would put every tile face in the bundle.
 
 - [ ] **M3: Intruders** — the token bag (types, counts, development/escalation), spawning from
       encounters and events, intruder movement toward noise, per-type stats and behaviour, surprise

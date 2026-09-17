@@ -5,7 +5,8 @@
 Cryosleep — a semi-cooperative online survival-horror board game for 2–5 players, in the vein of
 Nemesis (Awaken Realms), rebuilt as an **original-fiction reskin**: the mechanical skeleton is
 reimplemented, none of the published text, names, or art is. Crew are identified by **role only**
-(scout, mechanic, soldier, scientist, pilot, captain, doctor) — never by a personal name. Every
+(captain, pilot, scientist, scout, soldier, mechanic — the published game's six) — never by a
+personal name. Every
 player plays on their own computer, from wherever they are — there is no shared board screen and no
 phone-controller layer. Voice happens outside the app (Discord).
 

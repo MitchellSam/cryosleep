@@ -42,7 +42,18 @@ npm run typecheck
 npm run lint
 ```
 
+## Rules
+
+[RULES.md](RULES.md) is the specification the engine implements — the published game's rules in our
+own words, reproduced faithfully. [RULES-GAPS.md](RULES-GAPS.md) tracks what is still unresolved and
+the ruling we adopted meanwhile. A rules question is answered by checking RULES.md, and RULES.md is
+answered by checking the rulebook — never by inventing a ruling.
+
 ## Status
 
-Scaffolded. See [SPEC.md](SPEC.md) for the approved milestone plan; M1 (walking skeleton + rules
-capture) is next.
+**M1 — walking skeleton, done.** Lobby (create/join by 4-letter code, pick one of six roles, host
+starts), a stub ship graph, the `move` and `pass` actions resolved server-side, per-player views,
+and reconnect after a refresh. The `PlayerView` projection and its redaction tests are in from this
+commit.
+
+Next: M2 (the real room graph, exploration, noise). See [SPEC.md](SPEC.md) for the full plan.
