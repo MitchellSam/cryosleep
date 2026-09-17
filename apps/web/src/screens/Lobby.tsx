@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ROLES, ROLE_CONTENT, type Role } from '@cryosleep/shared';
+import { MIN_PLAYERS, ROLES, ROLE_CONTENT, type Role } from '@cryosleep/shared';
 import { useNet } from '../net.js';
 
 export function Lobby() {
@@ -90,7 +90,9 @@ export function Lobby() {
         </button>
       </div>
       {!lobby.canStart && (
-        <p className="muted">Two or more crew, each with a role, before you can start.</p>
+        <p className="muted">
+          {MIN_PLAYERS} or more crew, each with a role, before you can start.
+        </p>
       )}
     </div>
   );

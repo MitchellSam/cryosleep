@@ -99,6 +99,44 @@ describe('projectFor', () => {
     expect(() => projectFor('mallory', state())).toThrow(/no such player/);
   });
 
+  it('carries no key on a crew entry beyond the public ones', () => {
+    // crew[] is where a secret is most likely to be added by accident, so the
+    // gate covers it as well as the top level.
+    const [bob] = projectFor('alice', state()).crew;
+
+    expect(Object.keys(bob ?? {}).sort()).toEqual(
+      [
+        'actionsRemaining',
+        'connected',
+        'handSize',
+        'id',
+        'lightWounds',
+        'location',
+        'name',
+        'passed',
+        'role',
+      ].sort(),
+    );
+  });
+
+  it('carries exactly the declared keys on the self view', () => {
+    const view = projectFor('alice', state());
+
+    expect(Object.keys(view.you).sort()).toEqual(
+      [
+        'actionsRemaining',
+        'hand',
+        'id',
+        'lightWounds',
+        'location',
+        'name',
+        'objectives',
+        'passed',
+        'role',
+      ].sort(),
+    );
+  });
+
   it('carries no key from GameState that is not declared on PlayerView', () => {
     // Guards against someone "fixing" projectFor with a spread of state.
     const view = projectFor('alice', state()) as unknown as Record<string, unknown>;

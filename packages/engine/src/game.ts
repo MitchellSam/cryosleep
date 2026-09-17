@@ -117,15 +117,17 @@ function endRound(state: GameState, self: PlayerState, events: readonly string[]
     // what is faithful already is that the First Player token passes one seat
     // and the next Player Phase starts with its holder — RULES.md §3.1(2).
     const firstPlayer = nextFirstPlayer(next);
+    const boundary = 'All crew have passed. A new turn begins.';
+    const turnEvents = [...events, boundary];
     next = {
       ...next,
       turn: next.turn + 1,
       players: next.players.map((p) => ({ ...p, passed: false })),
       firstPlayer,
       activePlayer: firstPlayer,
-      log: [...next.log, ...events.map((text) => ({ turn: next.turn, text }))],
+      log: [...next.log, ...turnEvents.map((text) => ({ turn: next.turn, text }))],
     };
-    return { state: next, events: [...events, 'All crew have passed. A new turn begins.'] };
+    return { state: next, events: turnEvents };
   }
 
   next = {

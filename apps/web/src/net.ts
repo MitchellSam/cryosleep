@@ -71,7 +71,12 @@ export const useNet = create<NetState>((set, get) => ({
       writeSession({ code: payload.code, token: payload.token });
       set({ playerId: payload.playerId, code: payload.code, error: null });
     });
-    socket.on('lobby', (lobby: LobbyState) => set({ lobby, view: null }));
+    socket.on('lobby', (lobby: LobbyState) => {
+      // A late broadcast from a room we left would otherwise overwrite the room
+      // we are in now, and the screen would render someone else's lobby.
+      if (get().code && lobby.code !== get().code) return;
+      set({ lobby, view: null });
+    });
     socket.on('view', (view: PlayerView) => set({ view }));
     socket.on('error_message', (payload: ErrorPayload) => set({ error: payload.message }));
     socket.on('left', () => {
