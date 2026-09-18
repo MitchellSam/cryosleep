@@ -132,7 +132,15 @@ Remove the token afterwards. The Nest and the Room Covered With Slime do not get
 
 ### 4.2 Noise roll
 
-Roll the Noise die:
+Each room distributes the four numbered results across **its own** exits. The board prints a
+**Corridor Number** at each corridor mouth; where a room has fewer than four exits, one mouth
+carries two numbers, and a Technical Corridor entrance can absorb several. A corridor between two
+rooms can therefore be reached by a different number from each side. Roll the Noise die:
+
+> **PLACEHOLDER — the face distribution is unconfirmed.** Provisionally the d10 carries 1, 2, 3 and
+> 4 twice each, Danger once and Silence once. The *results* below are faithful; how often each comes
+> up is a guess, so the game is playable but not yet tuned. See G3 in
+> [RULES-GAPS.md](RULES-GAPS.md).
 
 - **1, 2, 3 or 4** — place a Noise marker in the connected Corridor with that number (a Technical
   Corridor entrance counts, and its marker goes on the shared Technical Corridors space). **A
@@ -235,6 +243,9 @@ Encounter's Room.
 ### 8.2 Shoot
 
 Choose a Weapon and a target in your Room, discard 1 Ammo, roll the Combat die:
+
+> **PLACEHOLDER — the face distribution is unconfirmed.** Provisionally the d6 carries a miss twice
+> and each other result once. See G4 in [RULES-GAPS.md](RULES-GAPS.md).
 
 | Result | Effect |
 |---|---|
@@ -394,8 +405,13 @@ passes** each turn they do not launch, and may step out freely. If a Bioform rea
 Section, everyone in its Pods is dumped back into the Room. A launched Pod's occupants count as
 having reached Earth. Heavy Objects take no seat.
 
-**Self-Destruct** — started in the Generator. Its marker advances with the Time marker. Yellow space
-→ unstoppable and all Pods unlock. Final space → the ship explodes. It cannot be started while
+**The Time Track** runs 15 spaces, counting down 15 → 1, then a final red space. The marker starts
+on 15 and advances one space every Event Phase, so a game is at most 15 turns. **Spaces 8 to 1 are
+blue**: the hibernation chambers open when the marker reaches 8. The red space is the hyperjump.
+
+**Self-Destruct** — started in the Generator, 6 spaces counting down then a skull. Its marker
+advances with the Time marker. **Spaces 3, 2 and 1 are yellow**: the sequence becomes unstoppable
+and all Pods unlock. The skull destroys the ship. It cannot be started while
 anyone is hibernating, and a hyperspace jump with the sequence active still destroys the ship.
 
 ### 13.1 End of the game
