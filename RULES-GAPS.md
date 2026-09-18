@@ -21,18 +21,20 @@ distributions have to be sourced separately.
 **G2. The board topology.** The Room slots, their numbering (001-021), the noise numbering of each
 room's exits, Technical Corridor entrances and the Escape Pod sections are printed on the board.
 *Status:* **the board is legible** — rulebook page 9 ("Board description") renders cleanly at high
-DPI, and the slot ids, exit shields and technical-corridor entrances can be read off it. What
-remains is careful transcription, slot by slot, plus a verification pass because the exit shields
+DPI, and the slot ids, Corridor Numbers and technical-corridor entrances can be read off it. What
+remains is careful transcription, slot by slot, plus a verification pass because the Corridor Numbers
 are small and 3/8/0 are easy to confuse.
 *Note:* room *tiles* are shuffled onto the slots at setup (RULES.md §2), so the fixed data is the
 **slot graph**; which room sits on which slot is per-game and hidden until revealed.
 *Blocks:* M2.
 
-**G2a. Noise numbers are per-room, not per-corridor.** Reading the board closely: each room carries
-shields numbered 1-4 at its exits, and where a room has a Technical Corridor entrance the entrance
-can carry **more than one number** (slot 002 shows a stacked "1" and "2" beside its entrance). So
-every room distributes the four noise results across its own exits, and a corridor between rooms A
-and B may be reached by a different number from each side.
+**G2a. Corridor Numbers are per-room, not per-corridor.** The board prints a **Corridor Number**
+badge at each corridor mouth (the rulebook's board description, item 15). Reading them closely: a
+room distributes the four noise results across its own exits, and where it has fewer than four
+exits a single mouth carries **two** numbers — the legend inset on page 9 shows a "3"/"1" pair and a
+"3"/"4" pair, and slot 002 shows a stacked "1"/"2" beside its Technical Corridor entrance. So the
+mapping is many-to-one, and a corridor between rooms A and B may be reached by a different number
+from each side.
 *Ruling:* model it as `room → { 1|2|3|4 → destination }`, where a destination is a neighbouring room
 or the Technical Corridors. M1's stub, which gave each corridor a single global number, is wrong and
 is replaced in M2.
@@ -44,14 +46,15 @@ published rules summaries, BGG and the component listings. **None of them docume
 distribution is legible only on the physical dice.
 *Ruling:* the distribution stays a named constant in content; every noise test asserts against the
 constant rather than against literal probabilities, so filling it in later changes one table.
-*Needs:* a photograph of the two Noise dice.
+*Needs:* the ten faces of a **Noise die** (d10) tallied — how many show 1, 2, 3, 4, Danger, Silence.
 *Blocks:* M2.
 
 **G4. Combat die face distribution.** Same problem, and same search result: nothing published. The
 five results are confirmed (miss / hit-vs-Larva-or-Creeper / hit-vs-Larva-Creeper-or-Adult / 1 hit /
 2 hits), so at least one repeats across a d6's six faces.
 *Ruling:* same approach — a named constant.
-*Needs:* a photograph of the two Combat dice.
+*Needs:* the six faces of an **Attack die** (d6, called the Combat die in the rules text) tallied —
+how many show miss, hit-vs-Larva-or-Creeper, hit-vs-Larva-Creeper-or-Adult, 1 hit, 2 hits.
 *Blocks:* M5.
 
 **G5. Which Rooms are which colour, and which hold Computers.** Search draws from the deck matching

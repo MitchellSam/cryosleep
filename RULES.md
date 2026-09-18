@@ -132,10 +132,10 @@ Remove the token afterwards. The Nest and the Room Covered With Slime do not get
 
 ### 4.2 Noise roll
 
-Each room distributes the four numbered results across **its own** exits: a room's exits carry
-shields numbered 1-4, and where a room has a Technical Corridor entrance that entrance may carry
-more than one number. A corridor between two rooms can therefore be reached by a different number
-from each side. Roll the Noise die:
+Each room distributes the four numbered results across **its own** exits. The board prints a
+**Corridor Number** at each corridor mouth; where a room has fewer than four exits, one mouth
+carries two numbers, and a Technical Corridor entrance can absorb several. A corridor between two
+rooms can therefore be reached by a different number from each side. Roll the Noise die:
 
 - **1, 2, 3 or 4** — place a Noise marker in the connected Corridor with that number (a Technical
   Corridor entrance counts, and its marker goes on the shared Technical Corridors space). **A
