@@ -44,18 +44,24 @@ is replaced in M2.
 but never states how many of a d10's ten faces carry each. Searched: the official FAQ (v2.1), the
 published rules summaries, BGG and the component listings. **None of them document it.** The
 distribution is legible only on the physical dice.
-*Ruling:* the distribution stays a named constant in content; every noise test asserts against the
-constant rather than against literal probabilities, so filling it in later changes one table.
-*Needs:* the ten faces of a **Noise die** (d10) tallied — how many show 1, 2, 3, 4, Danger, Silence.
-*Blocks:* M2.
+*Provisional distribution* — **1, 2, 3, 4 twice each; Danger once; Silence once** (10 faces).
+Source: owner's recollection, 2026-09-18. **Unconfirmed.** It is at least self-consistent, and a
+numbered result 8 times in 10 matches how quickly corridors fill with Noise markers in play.
+*Ruling:* the distribution lives in one content table marked provisional; the engine indexes it with
+the seeded RNG, and tests force a face through a seam rather than fishing for a seed that produces
+one — so correcting the table later changes one file and breaks no tests.
+*Needs:* the ten faces of a **Noise die** (d10) tallied against the six results.
+*Blocks:* nothing now; **revisit before any balance claim.**
 
 **G4. Combat die face distribution.** Same problem, and same search result: nothing published. The
 five results are confirmed (miss / hit-vs-Larva-or-Creeper / hit-vs-Larva-Creeper-or-Adult / 1 hit /
 2 hits), so at least one repeats across a d6's six faces.
-*Ruling:* same approach — a named constant.
-*Needs:* the six faces of an **Attack die** (d6, called the Combat die in the rules text) tallied —
-how many show miss, hit-vs-Larva-or-Creeper, hit-vs-Larva-Creeper-or-Adult, 1 hit, 2 hits.
-*Blocks:* M5.
+*Provisional distribution* — **miss twice; each of the other four results once** (6 faces). Source:
+owner's recollection, 2026-09-18. **Unconfirmed.**
+*Ruling:* same approach as G3 — one provisional content table, faces forced in tests.
+*Needs:* the six faces of an **Attack die** (d6, called the Combat die in the rules text) tallied
+against the five results.
+*Blocks:* nothing now; **revisit before any balance claim.**
 
 **G5. Which Rooms are which colour, and which hold Computers.** Search draws from the deck matching
 the Room's colour; white Rooms are player's choice. The mapping is printed on the tiles.

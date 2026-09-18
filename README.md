@@ -57,3 +57,15 @@ and reconnect after a refresh. The `PlayerView` projection and its redaction tes
 commit.
 
 Next: M2 (the real room graph, exploration, noise). See [SPEC.md](SPEC.md) for the full plan.
+
+### Known-provisional data
+
+Two things are placeholders and want correcting from the physical components — both tracked as G3
+and G4 in [RULES-GAPS.md](RULES-GAPS.md):
+
+- **Noise die (d10)** — provisionally 1/2/3/4 twice each, Danger once, Silence once.
+- **Attack die (d6)** — provisionally miss twice, each other result once.
+
+The rules they feed are faithful; only how often each result comes up is a guess, so the game plays
+correctly but is not yet tuned. Each lives in one content table, so correcting them is a one-file
+change.

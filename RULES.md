@@ -137,6 +137,11 @@ Each room distributes the four numbered results across **its own** exits. The bo
 carries two numbers, and a Technical Corridor entrance can absorb several. A corridor between two
 rooms can therefore be reached by a different number from each side. Roll the Noise die:
 
+> **PLACEHOLDER — the face distribution is unconfirmed.** Provisionally the d10 carries 1, 2, 3 and
+> 4 twice each, Danger once and Silence once. The *results* below are faithful; how often each comes
+> up is a guess, so the game is playable but not yet tuned. See G3 in
+> [RULES-GAPS.md](RULES-GAPS.md).
+
 - **1, 2, 3 or 4** — place a Noise marker in the connected Corridor with that number (a Technical
   Corridor entrance counts, and its marker goes on the shared Technical Corridors space). **A
   Corridor never holds more than one Noise marker: if told to place one where a marker already sits,
@@ -238,6 +243,9 @@ Encounter's Room.
 ### 8.2 Shoot
 
 Choose a Weapon and a target in your Room, discard 1 Ammo, roll the Combat die:
+
+> **PLACEHOLDER — the face distribution is unconfirmed.** Provisionally the d6 carries a miss twice
+> and each other result once. See G4 in [RULES-GAPS.md](RULES-GAPS.md).
 
 | Result | Effect |
 |---|---|
